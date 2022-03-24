@@ -20,7 +20,7 @@ class Individual():
         # this is the sum of the squared differences between all pixel values
         # normalized by dividing by the size of the image (is this necessary?)
         diff_squared = np.sum((self.genes - target)**2) 
-        self.fitness = diff_squared / (self.gene_len)
+        self.fitness = 1 - diff_squared / (self.max_gene**2)
 
 
     def crossover(self, fst_DNA, snd_DNA):
