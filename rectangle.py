@@ -51,13 +51,12 @@ class Rectangle():
         return value
 
     def crossover_rectangle(self, rect1, rect2):
-        #TODO: add randomness to this
-        self.x = rect1.x
-        self.y = rect1.y
-        self.z = rect1.z
-        self.width = rect2.width
-        self.height = rect2.height
-        self.color = rect2.color
+        self.x = np.random.choice([rect1.x,rect2.x])
+        self.y = np.random.choice([rect1.y,rect2.y])
+        self.z = np.random.choice([rect1.z,rect2.z])
+        self.width = np.random.choice([rect1.width,rect2.width])
+        self.height = np.random.choice([rect1.height,rect2.height])
+        self.color = np.random.choice([rect1.color,rect2.color])
 
     def mutate_rectangle(self, rectangle):
         random_mutation = np.random.randint(9)
