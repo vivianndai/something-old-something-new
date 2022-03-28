@@ -1,6 +1,8 @@
 # Runs the algorithm
 import numpy as np
 from PIL import Image
+from population import Population 
+
 
 def main():
     print("Hello World!")
@@ -13,6 +15,12 @@ def main():
     pilImage = Image.fromarray(np_img)
     print(type(pilImage))
     pilImage.show()
+
+    population = Population(0.1, 100)
+    population.setup(np_img)
+    for i in range(100):
+        population.new_generation(population.population_size)
+        population.calculate_all_fitness()
     
 if __name__ == "__main__":
     main()

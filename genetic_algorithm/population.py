@@ -15,11 +15,12 @@ class Population():
         self.target_dims = (0, 0) # dimensions of target image: (height, width) aka (# rows, # cols)
 
 
+
     def setup(self, target):
         self.target_image = target
         self.target_len = 0
         # init individuals in the population
-        self.population = np.array([Individual() for _ in range(self.population_size)])
+        self.population = np.array([Individual([0,0,0]) for _ in range(self.population_size)])
     
     def calculate_all_fitness(self):
         for i in range(self.population_size):
