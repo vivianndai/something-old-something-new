@@ -14,13 +14,14 @@ class Individual():
         self.gene_len = target_dims[0] * target_dims[1]
 
         # choose a random seq of genes (random pixel values for all genes)
-        self.genes = np.array([[np.random.randint(self.min_gene, self.max_gene) for _ in range(target_dims[1])] for _ in range(target_dims[0])])
+        self.genes = np.array([[np.random.randint(self.min_gene, self.max_gene, size = 3) for _ in range(target_dims[1])] for _ in range(target_dims[0])])
         self.fitness = 0.0 # float fitness
 
     def calculate_fitness(self, target):
         # return int fitness of self compared to target
         # this is the sum of the squared differences between all pixel values
         # normalized by dividing by the size of the image (is this necessary?)
+
         diff_squared = np.sum((self.genes - target)**2) 
         self.fitness = 1 - diff_squared / (self.max_gene**2)
 
@@ -39,4 +40,5 @@ class Individual():
         # chooses a number of mutations based on binom distribution, num genes, and mutation rate
         n_mutations = np.random.binomial(self.gene_len, rate)
         # changes that number of selected indices to random gene value
-        self.genes[np.random.randint(0, self.gene_len, size=n_mutations)] = np.random.randint(self.min_gene, self.max_gene)
+        # print('GENE LENGTH: ' + str(self.gene_len))
+        self.genes[np.random.randint(0, self.gene_dims[0], size=n_mutations)][np.random.randint(0, self.gene_dims[1], size=n_mutations)] = np.random.randint(self.min_gene, self.max_gene, size = 3)

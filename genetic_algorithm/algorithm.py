@@ -6,9 +6,7 @@ from population import Population
 
 
 def main():
-    print("Hello World!")
-    im = cv2.imread("starrynight.png",flags=cv2.IMREAD_COLOR)
-    print(type(im))
+    im = cv2.imread("static\images\starrynight.png",flags=cv2.IMREAD_COLOR)
     # img = Image.open("static\images\starrynight.png")
     # np_img = np.array(img)
     for i in range(90):
@@ -21,8 +19,10 @@ def main():
     # pilImage.show()
 
     population = Population(0.1, 100)
+    print(type(population.population[0]))
     population.setup(im)
-    for i in range(100):
+
+    for i in range(1):
         population.new_generation(population.population_size)
     
 if __name__ == "__main__":
