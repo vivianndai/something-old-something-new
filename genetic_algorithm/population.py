@@ -8,7 +8,7 @@ class Population():
         self.mutation_rate = mutation_rate # float, mutation rate
         self.population_size = pop # population size
 
-        self.population = [] #list of Individuals
+        self.population = np.empty(pop) #list of Individuals
         self.mating_pool = [] #list of Individuals of those in mating pool, duplicated n times if fitness of DNA = n
         self.target_image = [] # 2d matrix -> B/W target image
         self.mating_pool_size = 0
@@ -17,26 +17,36 @@ class Population():
 
 
     def setup(self, target):
+        assert len(target) != 0, "target image is empty"
         self.target_image = target
-        self.target_len = 0
+
+        # (H, W)
+        self.target_dims = (len(target), len(target[0]))
+        print(self.target_dims)
         # init individuals in the population
-        self.population = np.array([Individual([0,0,0]) for _ in range(self.population_size)])
-    
+        for i in range(self.population_size):
+            self.population[i] = Individual(self.target_dims)
+        print(self.population.size)
+
     def calculate_all_fitness(self):
         for i in range(self.population_size):
-            self.population[i].fitness(self.target_image) # should be an int
+            self.population[i].calculate_fitness(self.target_image) # should be an int
             # each Individual stores its own fitness
 
     def update_mating_pool(self):
+        self.calculate_all_fitness()
         for i in range(self.population_size):
-            for j in range(self.fitness[i]):
+            for _ in range(int(self.population[i].fitness)):
                 self.mating_pool.append(self.population[i])
         self.mating_pool_size = len(self.mating_pool)
+        print(self.mating_pool_size)
 
     """
     Chooses two Individuals to reproduce.
     """
     def reproduce(self):
+        self.update_mating_pool()
+
         fst_ind = self.mating_pool[np.random.randint(self.mating_pool_size)]
         snd_ind = self.mating_pool[np.random.randint(self.mating_pool_size)] # pick the two DNA to mate
 

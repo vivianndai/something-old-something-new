@@ -4,18 +4,20 @@ class Individual():
 
     """
     An individual is a member of the population
+
+    target_dims: (height, width) of the target image
     """
     def __init__(self, target_dims):
         self.min_gene = 0
         self.max_gene = 255 #set these values for B/W, RGBA, etc
         self.gene_dims = target_dims
-        self.gene_len = self.gene_dims[0] * self.gene_dims[1]
+        self.gene_len = target_dims[0] * target_dims[1]
 
         # choose a random seq of genes (random pixel values for all genes)
         self.genes = np.array([[np.random.randint(self.min_gene, self.max_gene) for _ in range(target_dims[1])] for _ in range(target_dims[0])])
         self.fitness = 0.0 # float fitness
 
-    def fitness(self, target):
+    def calculate_fitness(self, target):
         # return int fitness of self compared to target
         # this is the sum of the squared differences between all pixel values
         # normalized by dividing by the size of the image (is this necessary?)
