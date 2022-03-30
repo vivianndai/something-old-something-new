@@ -12,7 +12,6 @@ class Individual():
         self.max_gene = 255 #set these values for B/W, RGBA, etc
         self.gene_dims = target_dims
         self.gene_len = target_dims[0] * target_dims[1]
-
         # choose a random seq of genes (random pixel values for all genes)
         self.genes = np.array([[np.random.randint(self.min_gene, self.max_gene, size = 3) for _ in range(target_dims[1])] for _ in range(target_dims[0])])
         self.fitness = 0.0 # float fitness
@@ -22,14 +21,18 @@ class Individual():
         # this is the sum of the squared differences between all pixel values
         # normalized by dividing by the size of the image (is this necessary?)
 
+        # TODO: may have fixed negative fitness, need to run and check
         diff_squared = np.sum((self.genes - target)**2) 
-        self.fitness = 1 - diff_squared / (self.max_gene**2)
+        print
+        self.fitness = 1 - diff_squared / ((self.max_gene**2) * self.gene_len)
+        print("fitness is %f", self.fitness)
 
 
     def crossover(self, fst_DNA, snd_DNA):
         # idea: crossover is unlikely to generate the right image because there are 255 int values
         # that pixels can take (vs 26 for letters in words)
         # have our fitness measure take closeness into account
+        #TODO: rewrite this for image
         crossover_point = np.random.randint(self.gene_len)
         self.genes[:crossover_point] = fst_DNA.genes[:crossover_point]
         self.genes[crossover_point:] = snd_DNA.genes[crossover_point:]

@@ -1,14 +1,13 @@
 from individual import Individual
 import numpy as np
 
-# need to replace the loops with more efficient numpy methods for matrices
 
 class Population():
-    def __init__(self, mutation_rate, pop):
+    def __init__(self, mutation_rate=0.01, pop_size=100):
         self.mutation_rate = mutation_rate # float, mutation rate
-        self.population_size = pop # population size
+        self.population_size = pop_size # population size
 
-        self.population = np.empty(pop, dtype=Individual) #list of Individuals
+        self.population = np.empty(pop_size, dtype=Individual) #list of Individuals
         self.mating_pool = [] #list of Individuals of those in mating pool, duplicated n times if fitness of DNA = n
         self.target_image = [] # 2d matrix -> B/W target image
         self.mating_pool_size = 0
@@ -19,15 +18,15 @@ class Population():
     def setup(self, target):
         assert len(target) != 0, "target image is empty"
         self.target_image = target
-
         # (H, W)
         self.target_dims = (len(target), len(target[0]))
-        print(self.target_dims)
         # init individuals in the population
-        #CHANGED TO NUMPY 
-        self.population[:self.population_size] = Individual(self.target_dims)
-        # for i in range(self.population_size):
-        #     self.population[i] = Individual(self.target_dims)
+
+        # I don't think the following line works–it only initializes one individual and duplicates it
+        # self.population[:self.population_size] = Individual(self.target_dims)
+
+        for i in range(self.population_size):
+            self.population[i] = Individual(self.target_dims)
         
         print(self.population.size)
 
@@ -40,10 +39,10 @@ class Population():
         self.calculate_all_fitness()
         for i in range(self.population_size):
             # print("HERE!2")
-            # print(str(int(self.population[i].fitness)))
-            # for _ in range(int(self.population[i].fitness)):
+            # Adds individual to mating pool number of times weighted by fitness
+            for _ in range(int(self.population[i].fitness)):
             #     print("HERE!")
-            self.mating_pool.append(self.population[i])
+                self.mating_pool.append(self.population[i])
         self.mating_pool_size = len(self.mating_pool)
         print(self.mating_pool_size)
 
@@ -51,8 +50,6 @@ class Population():
     Chooses two Individuals to reproduce.
     """
     def reproduce(self):
-        self.update_mating_pool()
-
         fst_ind = self.mating_pool[np.random.randint(self.mating_pool_size)]
         snd_ind = self.mating_pool[np.random.randint(self.mating_pool_size)] # pick the two DNA to mate
 
@@ -66,9 +63,8 @@ class Population():
     Sorts population and removes unfit.
     """
     def fittest_survive(self):
-        # Sort by fitness here? is this inefficient? how large of a population is realistic?
-        # ----- sort population ------
-
+        # sort population by fitness
+        self.population = sorted(self.population, key=lambda x: x.fitness, reverse=True)
         # remove least fit
         self.population = self.population[:self.population_size]
 
@@ -78,6 +74,7 @@ class Population():
     - filter out those with lowest fitness
     """
     def new_generation(self, num_children):
+        self.update_mating_pool()
         new_children = np.array([self.reproduce() for _ in range(num_children)])
         self.population = np.concatenate(self.population, new_children)
         self.population = self.fittest_survive()

@@ -6,19 +6,13 @@ from population import Population
 
 
 def main():
-    im = cv2.imread("static\images\starrynight.png",flags=cv2.IMREAD_COLOR)
-    # img = Image.open("static\images\starrynight.png")
-    # np_img = np.array(img)
+    im = cv2.imread("../static/images/starrynight.png",flags=cv2.IMREAD_COLOR)
     for i in range(90):
         im[i] = [255,0,0]
     
-
     cv2.imwrite('filename.jpeg', im)
-    # pilImage = Image.fromarray(np_img)
-    # print(type(pilImage))
-    # pilImage.show()
 
-    population = Population(0.1, 100)
+    population = Population(0.1, 5)
     print(type(population.population[0]))
     population.setup(im)
 
