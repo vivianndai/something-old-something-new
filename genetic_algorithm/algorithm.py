@@ -17,7 +17,7 @@ def main():
     population.setup(im)
 
     for i in range(1):
-        population.new_generation(population.population_size)
+        population.new_generation(population.population_size, iteration=i)
     
 if __name__ == "__main__":
     main()
