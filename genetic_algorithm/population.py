@@ -26,7 +26,7 @@ class Population():
     def __init__(self, mutation_rate=0.01, pop_size=100):
         self.mutation_rate = mutation_rate
         self.population_size = pop_size
-        self.population = np.empty(pop_size) # CHANGE: we don't need , dtype=Individual) here.
+        self.population = np.empty(pop_size, dtype = Individual) # CHANGE: added dtype=Individual) here because I got an error
         self.mating_pool = []
         self.mating_pool_size = 0
         self.target_image = []
@@ -42,14 +42,10 @@ class Population():
         self.target_image = target
         self.target_dims = (len(target), len(target[0]))
 
-        # I don't think the following line works–it only initializes one individual and duplicates it
-        # self.population[:self.population_size] = Individual(self.target_dims)
-
         for i in range(self.population_size):
             self.population[i] = Individual(self.target_image)
 
     def calculate_all_fitness(self):
-        # TODO: optimization: only calculate fitness for new children
         self.total_fitness = 0
         for i in range(self.population_size):
             self.population[i].calculate_fitness(self.target_image) # should be an int
@@ -64,7 +60,7 @@ class Population():
             for _ in range(int(self.population[i].fitness)):
                 self.mating_pool.append(self.population[i])
         self.mating_pool_size = len(self.mating_pool)
-        print(self.mating_pool_size)
+        # print(self.mating_pool_size)
 
 
     """

@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 class Individual():
 
@@ -43,23 +44,40 @@ class Individual():
     def calculate_fitness(self, target):
         avg_diff_squared = np.sum((self.genes - target)**2) / self.gene_len
         self.fitness = int((self.max_gene**2) - avg_diff_squared)
-        print("fitness is %f", self.fitness)
+        # print("fitness is %f", self.fitness)
 
 
     """
-    #TODO: rewrite this and the method
+    Changes the genes of self based on the two indivduals passed in. 
+    We will be choosing a random crossover point in which we will use 
+    the genes of the first individual prior to this point, and the genes
+    of the second individual after this point. 
+
+    genes: matrix with same dimensions as target image
     """
     def crossover(self, fst_DNA, snd_DNA):
-        crossover_point = np.random.randint(self.gene_len)
-        self.genes[:crossover_point] = fst_DNA.genes[:crossover_point]
-        self.genes[crossover_point:] = snd_DNA.genes[crossover_point:]
+        #Randomly choose between the two different methods listed below 
+        if (random.randint(0,1)):
+            # For every entry into self.genes, randomly decide if we should use fst_DNA or snd_DNA
+            choice = np.random.randint(2, size = fst_DNA.genes.size).reshape(fst_DNA.genes.shape).astype(bool)
+            self.genes = np.where(choice, fst_DNA, snd_DNA)
+        else:
+            # Picks a random row to use first_DNA genes, then uses snd_DNA genes for the rest of the rows
+            random_row = np.random.randint(fst_DNA.genes.shape[0])
+            self.genes = fst_DNA.genes[:random_row]
+            self.genes = np.append(self.genes, np.array(snd_DNA.genes[random_row:]), axis = 0)
+
 
 
     """
     idea: randomly change certain pixel values
     Chooses a number of mutations based on binom distribution, num genes, and mutation rate
     """
-    #TODO: need to fix this, inconsistent RGB vs B/W
     def mutate(self, rate):
+        pixel_value = self.genes[0][0].size
         n_mutations = np.random.binomial(self.gene_len, rate)
-        self.genes[np.random.randint(0, self.gene_dims[0], size=n_mutations)][np.random.randint(0, self.gene_dims[1], size=n_mutations)] = np.random.randint(self.min_gene, self.max_gene, size = 3)
+        for _ in range(n_mutations):
+            random_row = np.random.randint(0, self.gene_dims[0])
+            random_col = np.random.randint(0, self.gene_dims[1])
+            random_value = np.random.randint(self.min_gene, self.max_gene, size = pixel_value)
+            self.genes[random_row][random_col] = random_value

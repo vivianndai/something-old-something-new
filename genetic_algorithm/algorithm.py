@@ -13,7 +13,7 @@ def main():
     cv2.imwrite('filename.jpeg', im)
 
     population = Population(0.1, 5)
-    print(type(population.population[0]))
+    # print(type(population.population[0]))
     population.setup(im)
 
     for i in range(1):
