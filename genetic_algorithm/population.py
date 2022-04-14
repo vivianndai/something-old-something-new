@@ -20,8 +20,10 @@ class Population():
     mating_pool_size (int): the number of individuals in the mating pool
     target_image (pixel matrix): the image we want to recreate in matrix representation
     target_dims (int, int): dimensions of the target image (# rows, #cols)
-    total_fitness (int): sum of all of the fitness values of Individuals
+    copies_in_mating_pool (int): the number of times an individual with perfect fitness is added to the mating pool
                          - needed to make proportionate mating pool
+                         - e.g if fitness = 255^2 = MAX_FITNESS, then added [copies_in_mating_pool] times
+                         - if fitness is half of that, added half the number of times, etc.
     """
     def __init__(self, mutation_rate=0.01, pop_size=100):
         self.mutation_rate = mutation_rate
@@ -31,7 +33,7 @@ class Population():
         self.mating_pool_size = 0
         self.target_image = []
         self.target_dims = (0, 0)
-        self.total_fitness = 0 
+        self.copies_in_mating_pool = 100
 
 
     """
@@ -46,22 +48,19 @@ class Population():
             self.population[i] = Individual(self.target_image)
 
     def calculate_all_fitness(self):
-        self.total_fitness = 0
         for i in range(self.population_size):
             self.population[i].calculate_fitness(self.target_image) # should be an int
             # each Individual stores its own fitness
-            self.total_fitness += self.population[i].fitness
 
     def update_mating_pool(self, iteration):
-        # TODO: Vivian will work on this method
+        print("--------------------------------------------- Generation", iteration, "---------------------------------------------")
         if iteration != 0:
             self.calculate_all_fitness()
         for i in range(self.population_size): 
-            for _ in range(int(self.population[i].fitness)):
+            num_adding_to_pool = int(self.population[i].fitness / 255**2 * self.copies_in_mating_pool)
+            for _ in range(num_adding_to_pool):
                 self.mating_pool.append(self.population[i])
         self.mating_pool_size = len(self.mating_pool)
-        # print(self.mating_pool_size)
-
 
     """
     Chooses two Individuals to reproduce at random from the mating pool.
@@ -71,7 +70,7 @@ class Population():
         parent_1 = self.mating_pool[np.random.randint(self.mating_pool_size)]
         parent_2 = self.mating_pool[np.random.randint(self.mating_pool_size)]
 
-        child = Individual(self.target_dims, p1 = parent_1, p2 = parent_2, crossover=True, mutate=True, mutation_rate=self.mutation_rate)
+        child = Individual(target=self.target_image, p1=parent_1, p2=parent_2, crossover=True, mutate=True, mutation_rate=self.mutation_rate)
 
         return child
 
@@ -92,6 +91,6 @@ class Population():
     def new_generation(self, num_children, iteration):
         self.update_mating_pool(iteration)
         new_children = np.array([self.reproduce() for _ in range(num_children)])
-        self.population = np.concatenate(self.population, new_children)
-        self.population = self.fittest_survive(new_children)
+        self.population = np.concatenate((self.population, new_children))
+        self.fittest_survive(new_children)
 

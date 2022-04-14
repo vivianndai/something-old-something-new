@@ -12,11 +12,11 @@ def main():
     
     cv2.imwrite('filename.jpeg', im)
 
-    population = Population(0.1, 5)
+    population = Population(mutation_rate=0.1, pop_size=5)
     # print(type(population.population[0]))
     population.setup(im)
 
-    for i in range(1):
+    for i in range(5):
         population.new_generation(population.population_size, iteration=i)
     
 if __name__ == "__main__":

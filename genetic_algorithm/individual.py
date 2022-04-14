@@ -18,6 +18,8 @@ class Individual():
     gene_dims: dimension of image
     gene_len: number of pixels in image #TODO: decide if needed
     genes: matrix with same dimensions as target image
+
+    max fitness is 255^2 = 65025
     """
     def __init__(self, target, p1=None, p2=None, crossover=False, mutate=False, mutation_rate=0.01):
         self.min_gene = 0
@@ -34,7 +36,7 @@ class Individual():
             # choose a random matrix of genes (random pixel values for all genes)
             self.genes = np.random.randint(low=self.min_gene, high=self.max_gene, size=self.gene_dims)
 
-        self.fitness = self.calculate_fitness(target)
+        self.calculate_fitness(target)
 
     """
     Returns int fitness of self compared to target.
@@ -44,7 +46,7 @@ class Individual():
     def calculate_fitness(self, target):
         avg_diff_squared = np.sum((self.genes - target)**2) / self.gene_len
         self.fitness = int((self.max_gene**2) - avg_diff_squared)
-        # print("fitness is %f", self.fitness)
+        print("fitness:", self.fitness)
 
 
     """
@@ -58,14 +60,15 @@ class Individual():
     def crossover(self, fst_DNA, snd_DNA):
         #Randomly choose between the two different methods listed below 
         if (random.randint(0,1)):
-            # For every entry into self.genes, randomly decide if we should use fst_DNA or snd_DNA
+        # For every entry into self.genes, randomly decide if we should use fst_DNA or snd_DNA
             choice = np.random.randint(2, size = fst_DNA.genes.size).reshape(fst_DNA.genes.shape).astype(bool)
-            self.genes = np.where(choice, fst_DNA, snd_DNA)
+            self.genes = np.where(choice, fst_DNA.genes, snd_DNA.genes) # CHANGE: fst_DNA -> fst_DNA.genes
         else:
             # Picks a random row to use first_DNA genes, then uses snd_DNA genes for the rest of the rows
             random_row = np.random.randint(fst_DNA.genes.shape[0])
             self.genes = fst_DNA.genes[:random_row]
             self.genes = np.append(self.genes, np.array(snd_DNA.genes[random_row:]), axis = 0)
+
 
 
 
