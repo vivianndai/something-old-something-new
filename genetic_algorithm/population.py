@@ -25,7 +25,7 @@ class Population():
                          - e.g if fitness = 255^2 = MAX_FITNESS, then added [copies_in_mating_pool] times
                          - if fitness is half of that, added half the number of times, etc.
     """
-    def __init__(self, mutation_rate=0.01, pop_size=100):
+    def __init__(self, mutation_rate=0.01, pop_size=100, crossover=True, mutate=True):
         self.mutation_rate = mutation_rate
         self.population_size = pop_size
         self.population = np.empty(pop_size, dtype = Individual) # CHANGE: added dtype=Individual) here because I got an error
@@ -34,6 +34,8 @@ class Population():
         self.target_image = []
         self.target_dims = (0, 0)
         self.copies_in_mating_pool = 100
+        self.crossover = crossover
+        self.mutate = mutate
 
 
     """
@@ -70,7 +72,7 @@ class Population():
         parent_1 = self.mating_pool[np.random.randint(self.mating_pool_size)]
         parent_2 = self.mating_pool[np.random.randint(self.mating_pool_size)]
 
-        child = Individual(target=self.target_image, p1=parent_1, p2=parent_2, crossover=True, mutate=True, mutation_rate=self.mutation_rate)
+        child = Individual(target=self.target_image, p1=parent_1, p2=parent_2, crossover=self.crossover, mutate=self.mutate, mutation_rate=self.mutation_rate)
 
         return child
 
@@ -82,6 +84,7 @@ class Population():
         self.population = sorted(self.population, key=lambda x: x.fitness, reverse=True)
         # remove least fit
         self.population = self.population[:self.population_size]
+        print("Best individuals in generation:", [i.fitness for i in self.population])
 
     """
     Replace population with new generation of individuals:
@@ -94,3 +97,5 @@ class Population():
         self.population = np.concatenate((self.population, new_children))
         self.fittest_survive(new_children)
 
+    def get_most_fit_individual(self):
+        return self.population[0].genes

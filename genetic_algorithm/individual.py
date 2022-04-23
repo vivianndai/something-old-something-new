@@ -27,6 +27,7 @@ class Individual():
         self.gene_dims = np.shape(target)
         self.gene_len = self.gene_dims[0] * self.gene_dims[1]
         self.genes = np.zeros(self.gene_dims)
+        self.fitness = 0
 
         if crossover:
             self.crossover(p1, p2)
@@ -59,15 +60,15 @@ class Individual():
     """
     def crossover(self, fst_DNA, snd_DNA):
         #Randomly choose between the two different methods listed below 
-        if (random.randint(0,1)):
+        # if (random.randint(0,1)):
         # For every entry into self.genes, randomly decide if we should use fst_DNA or snd_DNA
-            choice = np.random.randint(2, size = fst_DNA.genes.size).reshape(fst_DNA.genes.shape).astype(bool)
-            self.genes = np.where(choice, fst_DNA.genes, snd_DNA.genes) # CHANGE: fst_DNA -> fst_DNA.genes
-        else:
+        choice = np.random.randint(2, size = fst_DNA.genes.size).reshape(self.gene_dims).astype(bool)
+        self.genes = np.where(choice, fst_DNA.genes, snd_DNA.genes) # CHANGE: fst_DNA -> fst_DNA.genes
+        # else:
             # Picks a random row to use first_DNA genes, then uses snd_DNA genes for the rest of the rows
-            random_row = np.random.randint(fst_DNA.genes.shape[0])
-            self.genes = fst_DNA.genes[:random_row]
-            self.genes = np.append(self.genes, np.array(snd_DNA.genes[random_row:]), axis = 0)
+            # random_row = np.random.randint(fst_DNA.genes.shape[0])
+            # self.genes = fst_DNA.genes[:random_row]
+            # self.genes = np.append(self.genes, np.array(snd_DNA.genes[random_row:]), axis = 0)
 
 
 
