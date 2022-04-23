@@ -6,7 +6,7 @@ import numpy as np
 # - have some way of keeping track what is being worked on, what are TODOs at this scale
 
 # code TODO:
-# - decide what goes in init vs setup
+# - decide what goes in init vs setup 
 # - conversion to RGB needs to be all at once, or else some things will break
 
 
