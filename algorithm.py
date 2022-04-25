@@ -43,6 +43,7 @@ class BrushStroke():
         elif rand == 3:
             brushstroke.posY = int(random.randrange(0, target_dims[1]))
 
+    # draws a brushstroke onto a canvas
     def draw_brushstroke(self, brushstroke, target_img):
         color = brushstroke.genes[0]
         brush = brushstroke.genes[1]
@@ -50,7 +51,7 @@ class BrushStroke():
         posY = brushstroke.genes[3] + self.padding
         size = brushstroke.genes[4]
 
-        # test which interpolation method is best
+        # test which interpolation method is best/most efficient
         brush_resized = cv2.resize(
             brush, None, fx=size, fy=size, interpolation=cv2.INTER_LINEAR)
         rows = brush_resized.shape(0)
@@ -66,7 +67,16 @@ class BrushStroke():
         out = cv2.add(brush_img, canvas).astype(int)
         return out
 
+    # draws a sequence of brushstrokes onto a canvas that is initially blank
     def draw_canvas(self, brushstroke_seq, target_img):
-        img = 0
-        for brushstroke in brushstroke_seq:
-            self.draw_brushstroke(brushstroke, img)
+        out = [
+            np.zeros((target_img.shape[0], target_img.shape[1]), np.uint8)]
+        for i in range(len(brushstroke_sequence)):
+            temp_canvas = self.draw_brushstroke(brushstroke[i], out)
+            out = self.drawbrushstroke(brushstroke[i+1], temp_canvas)
+        return out
+
+    def calculate_error(brushstroke_seq, target_img):
+        img = self.draw_canvas(brushstroke_seq, target_img)
+        error = cv2.norm(img, target_img)
+        # fitness = 1-error/(target_img.shape[0] * target_img.shape[1])
