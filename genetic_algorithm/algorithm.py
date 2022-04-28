@@ -13,7 +13,7 @@ def main():
     # print(type(population.population[0]))
     population.setup(im)
 
-    num_gens = 5
+    num_gens = 300
     for i in range(num_gens):
         population.new_generation(population.population_size, iteration=i)
     
