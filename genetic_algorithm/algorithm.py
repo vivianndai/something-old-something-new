@@ -9,7 +9,7 @@ def main():
     im = cv2.imread("../static/images/small.jpeg",flags=cv2.IMREAD_COLOR)    
     # cv2.imwrite('filename.jpeg', im)
 
-    population = Population(mutation_rate=0.01, pop_size=20, crossover=True, mutate=True)
+    population = Population(mutation_rate=0.01, pop_size=70, crossover=True, mutate=True)
     # print(type(population.population[0]))
     population.setup(im)
 

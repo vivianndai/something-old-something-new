@@ -2,15 +2,6 @@ import numpy as np
 import random
 from triangle import Triangle
 
-WINDOW_WIDTH = 25
-WINDOW_HEIGHT = 16
-#TODO: change this to be dependent on screen width/height
-MAX_MOVEMENT = 5
-MAX_SCALE = 2
-#TODO: change this based on visual testing 
-MAX_SIZE = 10
-MIN_SIZE = 2
-
 class Individual():
 
     """
@@ -47,13 +38,17 @@ class Individual():
         if mutate:
             self.mutate(rate=mutation_rate)
         else:
-            for _ in range(15):
-                self.shapes = np.append(self.shapes, (Triangle(0,0,0,0,0,0,[0,0,0], True)))
+            for _ in range(10):
+                self.shapes = np.append(self.shapes, (Triangle(0,0,0,0,0,0,[0,0,0], True, self.gene_dims)))
             self.draw_triangles()
 
 
         self.calculate_fitness(target)
 
+    """ 
+    For every shape in the Shape list, we will update the self.genes matrix to hold the color values that correspond
+    to the shapes. 
+    """
     def draw_triangles(self):
         #Right now self.genes is a 2D array, the size of the image. Each index is a 3-tuple w/ RGB 
         #self.shape is a list of Rectangle objects 
@@ -69,8 +64,12 @@ class Individual():
                         self.genes[i][j] = shape.color
 
 
+    """
+    Returns the area of a triangle given 3 points 
+    """
     def area(self, x1, y1, x2, y2, x3, y3):
         return abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0)
+    
     """
     Returns whether the point P(x,y) lies within the triangle formed by 
     points (x1,y1), (x2,y2), and (x3,y3)
@@ -90,6 +89,7 @@ class Individual():
         
         # Check if sum of A1, A2 and A3 is same as A
         return (A == A1 + A2 + A3)  
+    
     """
     Returns int fitness of self compared to target.
     If complete opposite image (255 vs 0 for each pixel), then fitness is 0.
@@ -100,20 +100,6 @@ class Individual():
         self.fitness = int((self.max_gene**2) - avg_diff_squared)
         print("fitness:", self.fitness)
 
-    # def calculate_image_fitness(self, image1, image2):
-    #     error = 0 
-    #     for r in range(image1[0]):
-    #         for c in range(r[0]):
-    #             rgb1 = image1[r][c]
-    #             rgb2 = image2[r][c]
-
-    #             red_error = np.sqrt(rgb1[0]**2 + rgb2[0]**2)
-    #             green_error = np.sqrt(rgb1[1]**2 + rgb2[0]**2)
-    #             blue_error = np.sqrt(rgb1[2]**2 + rgb2[0]**2)
-
-    #             error += red_error + green_error + blue_error
-
-    #     return error
     """
     Changes the genes of self based on the two indivduals passed in. 
     We will be choosing a random crossover point in which we will use 
@@ -134,6 +120,9 @@ class Individual():
             # self.genes = fst_DNA.genes[:random_row]
             # self.genes = np.append(self.genes, np.array(snd_DNA.genes[random_row:]), axis = 0)
 
+    """
+    Crossover between two triangle objects
+    """
     def crossover_triangle(self, tri1, tri2):
         x1 = np.random.choice([tri1.x1,tri2.x1])
         x2 = np.random.choice([tri1.x2,tri2.x2])
@@ -144,7 +133,8 @@ class Individual():
         y3 = np.random.choice([tri1.y3,tri2.y3])
 
         color = np.random.choice([tri1.color,tri2.color])
-        return Triangle(x1,x2,x3,y1,y2,y3,color,False)
+        return Triangle(x1,x2,x3,y1,y2,y3,color,False, self.gene_dims)
+   
     """
     idea: randomly change certain pixel values
     Chooses a number of mutations based on binom distribution, num genes, and mutation rate
@@ -157,17 +147,20 @@ class Individual():
             self.mutate_triangle(random_triangle[0])
             # self.shapes[random_index] = self.mutate_triangle(random_triangle)
 
+    """
+    Mutation of a triangle object
+    """
     def mutate_triangle(self, triangle):
         random_mutation = np.random.randint(9)
         if random_mutation == 0: 
-            triangle.x1 = self.clamp(triangle.x1 + np.random.randint(MAX_MOVEMENT), 0, WINDOW_WIDTH - 1) 
-            triangle.y1 = self.clamp(triangle.y1 + np.random.randint(MAX_MOVEMENT), 0, WINDOW_HEIGHT - 1)
+            triangle.x1 = self.clamp(triangle.x1 + np.random.randint(self.gene_dims[0]/5), 0, self.gene_dims[0] - 1) 
+            triangle.y1 = self.clamp(triangle.y1 + np.random.randint(self.gene_dims[1]/5), 0, self.gene_dims[1] - 1)
         elif random_mutation == 1:
-            triangle.x2 = self.clamp(triangle.x2 + np.random.randint(MAX_MOVEMENT), 0, WINDOW_WIDTH - 1) 
-            triangle.y2 = self.clamp(triangle.y2 + np.random.randint(MAX_MOVEMENT), 0, WINDOW_HEIGHT - 1)
+            triangle.x2 = self.clamp(triangle.x2 + np.random.randint(self.gene_dims[0]/5), 0, self.gene_dims[0] - 1) 
+            triangle.y2 = self.clamp(triangle.y2 + np.random.randint(self.gene_dims[1]/5), 0, self.gene_dims[1] - 1)
         elif random_mutation == 2:
-            triangle.x3 = self.clamp(triangle.x3 + np.random.randint(MAX_MOVEMENT), 0, WINDOW_WIDTH - 1) 
-            triangle.y3 = self.clamp(triangle.y3 + np.random.randint(MAX_MOVEMENT), 0, WINDOW_HEIGHT - 1)
+            triangle.x3 = self.clamp(triangle.x3 + np.random.randint(self.gene_dims[0]/5), 0, self.gene_dims[0] - 1) 
+            triangle.y3 = self.clamp(triangle.y3 + np.random.randint(self.gene_dims[1]/5), 0, self.gene_dims[1] - 1)
         elif random_mutation == 3:
             triangle.color[0] = self.clamp(triangle.color[0] + np.random.randint(255), 0, 255) 
         elif random_mutation == 4:
@@ -177,6 +170,9 @@ class Individual():
         else: 
             pass 
 
+    """
+    Ensures that floor <= value <= ceiling
+    """
     def clamp(self, value, floor, ceiling):
         if value < floor: return floor
         elif value > ceiling: return ceiling 
