@@ -15,7 +15,7 @@ class Individual():
 
     min_gene: minimum gene value
     max_gene: maximum gene value
-    gene_dims: dimension of image
+    gene_dims: dimension of image 
     gene_len: number of pixels in image #TODO: decide if needed
     genes: matrix with same dimensions as target image
 
@@ -62,7 +62,7 @@ class Individual():
         #Randomly choose between the two different methods listed below 
         # if (random.randint(0,1)):
         # For every entry into self.genes, randomly decide if we should use fst_DNA or snd_DNA
-        choice = np.random.randint(2, size = fst_DNA.genes.size).reshape(self.gene_dims).astype(bool)
+        choice = np.random.randint(2, size=self.gene_dims).reshape(self.gene_dims).astype(bool)
         self.genes = np.where(choice, fst_DNA.genes, snd_DNA.genes) # CHANGE: fst_DNA -> fst_DNA.genes
         # else:
             # Picks a random row to use first_DNA genes, then uses snd_DNA genes for the rest of the rows
@@ -78,10 +78,6 @@ class Individual():
     Chooses a number of mutations based on binom distribution, num genes, and mutation rate
     """
     def mutate(self, rate):
-        pixel_value = self.genes[0][0].size
-        n_mutations = np.random.binomial(self.gene_len, rate)
-        for _ in range(n_mutations):
-            random_row = np.random.randint(0, self.gene_dims[0])
-            random_col = np.random.randint(0, self.gene_dims[1])
-            random_value = np.random.randint(self.min_gene, self.max_gene, size = pixel_value)
-            self.genes[random_row][random_col] = random_value
+        mutation_indicator_matrix = np.random.binomial(1, rate, size=self.gene_dims) # matrix of 1s and 0s: 1 if mutate, 0 if not
+        random_values = np.random.randint(self.min_gene, self.max_gene, size=self.gene_dims)
+        self.genes = self.genes * (1 - mutation_indicator_matrix) + random_values * mutation_indicator_matrix
