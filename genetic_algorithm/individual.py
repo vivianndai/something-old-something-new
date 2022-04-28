@@ -47,7 +47,7 @@ class Individual():
     def calculate_fitness(self, target):
         avg_diff_squared = np.sum((self.genes - target)**2) / self.gene_len
         self.fitness = int((self.max_gene**2) - avg_diff_squared)
-        print("fitness:", self.fitness)
+        # print("fitness:", self.fitness)
 
 
     """
@@ -62,15 +62,13 @@ class Individual():
         #Randomly choose between the two different methods listed below 
         # if (random.randint(0,1)):
         # For every entry into self.genes, randomly decide if we should use fst_DNA or snd_DNA
-        choice = np.random.randint(2, size=self.gene_dims).reshape(self.gene_dims).astype(bool)
+        choice = np.random.binomial(1, fst_DNA.normalize_fitness(), size=self.gene_dims).astype(bool)
         self.genes = np.where(choice, fst_DNA.genes, snd_DNA.genes) # CHANGE: fst_DNA -> fst_DNA.genes
         # else:
             # Picks a random row to use first_DNA genes, then uses snd_DNA genes for the rest of the rows
             # random_row = np.random.randint(fst_DNA.genes.shape[0])
             # self.genes = fst_DNA.genes[:random_row]
             # self.genes = np.append(self.genes, np.array(snd_DNA.genes[random_row:]), axis = 0)
-
-
 
 
     """
@@ -81,3 +79,10 @@ class Individual():
         mutation_indicator_matrix = np.random.binomial(1, rate, size=self.gene_dims) # matrix of 1s and 0s: 1 if mutate, 0 if not
         random_values = np.random.randint(self.min_gene, self.max_gene, size=self.gene_dims)
         self.genes = self.genes * (1 - mutation_indicator_matrix) + random_values * mutation_indicator_matrix
+
+    """
+    Normalizes fitness to be between 0 and 1.
+    Returns: x: float, 0 <= x <= 1
+    """
+    def normalize_fitness(self):
+        return self.fitness/255**2
