@@ -15,18 +15,16 @@ def main():
     im = cv2.imread("../static/images/small.jpeg",flags=cv2.IMREAD_COLOR)    
 
     population = Population(mutation_rate=MUTATION_RATE, pop_size=POP_SIZE, crossover=CROSSOVER, mutate=CROSSOVER)
-    # print(type(population.population[0]))
     population.setup(im)
 
     start = time.time() # measure elapsed time
-
     for i in range(NUM_GENERATIONS):
         population.new_generation(population.population_size, iteration=i)
-    
+    most_fit = population.get_most_fit_individual()
+
     end = time.time()
     print("Elapsed time:", end - start)
 
-    most_fit = population.get_most_fit_individual()
     file_name = "output/result" + "-popsize" + str(POP_SIZE) + "-gens" + str(NUM_GENERATIONS)
     if population.crossover:
         file_name += "-crossover"

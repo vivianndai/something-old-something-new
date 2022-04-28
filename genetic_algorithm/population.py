@@ -19,7 +19,6 @@ class Population():
                  - they are duplicated a number of times in the mating_pool based on their fitness.
     mating_pool_size (int): the number of individuals in the mating pool
     target_image (pixel matrix): the image we want to recreate in matrix representation
-    target_dims (int, int): dimensions of the target image (# rows, #cols)
     copies_in_mating_pool (int): the number of times an individual with perfect fitness is added to the mating pool
                          - needed to make proportionate mating pool
                          - e.g if fitness = 255^2 = MAX_FITNESS, then added [copies_in_mating_pool] times
@@ -28,12 +27,11 @@ class Population():
     def __init__(self, mutation_rate=0.01, pop_size=100, crossover=True, mutate=True):
         self.mutation_rate = mutation_rate
         self.population_size = pop_size
-        self.population = np.empty(pop_size, dtype = Individual) # CHANGE: added dtype=Individual) here because I got an error
+        self.population = np.empty(pop_size, dtype=Individual) # CHANGE: added dtype=Individual) here because I got an error
         self.mating_pool = []
         self.mating_pool_size = 0
         self.target_image = []
-        self.target_dims = (0, 0)
-        self.copies_in_mating_pool = 100
+        self.copies_in_mating_pool = 50
         self.crossover = crossover
         self.mutate = mutate
 
@@ -44,7 +42,6 @@ class Population():
     def setup(self, target):
         assert len(target) != 0, "target image is empty"
         self.target_image = target
-        self.target_dims = (len(target), len(target[0]))
 
         for i in range(self.population_size):
             self.population[i] = Individual(self.target_image)
