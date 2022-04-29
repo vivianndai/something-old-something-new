@@ -13,7 +13,7 @@ class Brushstroke():
         self.brush_type = random.randrange(0, self.brushNumber)
 
         # representation of the brush img in matrix form
-        brush_rep = self.brushes[self.brush_type]
+        self.brush_rep = self.brushes[self.brush_type]
 
         self.posX = int(random.randrange(0, target_dims[0]))
         self.posY = int(random.randrange(0, target_dims[1]))
