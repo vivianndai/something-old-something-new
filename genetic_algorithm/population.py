@@ -44,7 +44,7 @@ class Population():
         self.target_image = target
 
         for i in range(self.population_size):
-            self.population[i] = Individual(self.target_image)
+            self.population[i] = Individual(self.target_image, )
 
     def calculate_all_fitness(self):
         for i in range(self.population_size):
@@ -95,4 +95,4 @@ class Population():
         self.fittest_survive(new_children)
 
     def get_most_fit_individual(self):
-        return self.population[0].genes
+        return self.population[0].drawn_image
