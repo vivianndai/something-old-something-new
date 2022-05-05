@@ -9,15 +9,16 @@ def main():
     im = cv2.imread("../static/images/small.jpeg",flags=cv2.IMREAD_COLOR)    
     # cv2.imwrite('filename.jpeg', im)
 
-    population = Population(mutation_rate=0.01, pop_size=70, crossover=True, mutate=True)
+    population = Population(mutation_rate=0.01, pop_size=71, crossover=True, mutate=True)
     # print(type(population.population[0]))
     population.setup(im)
 
-    num_gens = 300
+    num_gens = 10
+    num_shapes = 5
     for i in range(num_gens):
         population.new_generation(population.population_size, iteration=i)
     
-    most_fit = population.get_most_fit_individual()
+    most_fit = population.get_top_fit_individuals(num_shapes)
     file_name = "output/result" + "-popsize" + str(population.population_size) + "-gens" + str(num_gens)
     if population.crossover:
         file_name += "-crossover"

@@ -22,46 +22,65 @@ class Individual():
 
     max fitness is 255^2 = 65025
     """
-    def __init__(self, target, p1=None, p2=None, crossover=False, mutate=False, mutation_rate=0.01):
-        self.min_gene = 0
-        self.max_gene = 255 #set these values for B/W, RGBA, etc
-        self.gene_dims = np.shape(target)
-        self.gene_len = self.gene_dims[0] * self.gene_dims[1]
-        # Genes = array that will be turned into final output image
-        self.genes = np.zeros(self.gene_dims)
-        # Shapes = List of triangle objects in the image 
-        self.shapes = np.array([], dtype=Triangle)
-        self.fitness = 0
+    def __init__(self, x1, x2, x3, y1, y2, y3, color, randomize, target, p1=None, p2=None, 
+                crossover=False,mutate=False,mutation_rate=0.01):
+        if not randomize: 
+            self.x1, self.y1 = x1, y1
+            self.x2, self.y2 = x2, y2
+            self.x3, self.y3 = x3, y3
+            self.color = color
+        else: 
+            red = np.random.randint(255)
+            green = np.random.randint(255)
+            blue = np.random.randint(255)
+            self.color = [red, green, blue]
 
+            shape = np.shape(target)
+            self.x1, self.y1 = self.initialize_points(shape)
+            self.x2, self.y2 = self.initialize_points(shape)
+            self.x3, self.y3 = self.initialize_points(shape)
+        self.fitness = 0 
+        self.target = target
         if crossover:
             self.crossover(p1, p2)
         if mutate:
             self.mutate(rate=mutation_rate)
         else:
-            for _ in range(10):
-                self.shapes = np.append(self.shapes, (Triangle(0,0,0,0,0,0,[0,0,0], True, self.gene_dims)))
-            self.draw_triangles()
-
-
+            #TODO: Add something here? 
+            #self.genes = np.random.randint(low=self.min_gene, high=self.max_gene, size=self.gene_dims)
+            pass
         self.calculate_fitness(target)
 
+    """Randomly initialize points given size of image"""
+    def initialize_points(self, size):
+        x = np.random.randint(0, size[0] - 1)
+        y = np.random.randint(0, size[1] - 1)
+        return x,y
+
+
     """ 
-    For every shape in the Shape list, we will update the self.genes matrix to hold the color values that correspond
-    to the shapes. 
+    Returns a 2D matrix of size target-dims where the location of the 
+    triangle based on its vertices is colored self.color, and all other 
+    values are 0 
+
+    Template: What we are drawing on
     """
-    def draw_triangles(self):
+    def draw_triangle(self, target, template):
+        shape = np.shape(target)
+
         #Right now self.genes is a 2D array, the size of the image. Each index is a 3-tuple w/ RGB 
         #self.shape is a list of Rectangle objects 
-        for shape in self.shapes: 
-            leftmost_bound = min(shape.x1, shape.x2, shape.x3)
-            rightmost_bound = max(shape.x1, shape.x2, shape.x3)
-            bottommost_bound = min(shape.y1, shape.y2, shape.y3)
-            topmost_bound = max(shape.y1, shape.y2, shape.y3)
+        leftmost_bound = min(self.x1, self.x2, self.x3)
+        rightmost_bound = max(self.x1, self.x2, self.x3)
+        bottommost_bound = min(self.y1, self.y2, self.y3)
+        topmost_bound = max(self.y1, self.y2, self.y3)
 
-            for i in range (bottommost_bound, topmost_bound):
-                for j in range (leftmost_bound, rightmost_bound):
-                    if self.isInsideTriangle(shape.x1, shape.x2, shape.x3, shape.y1, shape.y2, shape.y3, i, j):
-                        self.genes[i][j] = shape.color
+        for i in range (bottommost_bound, topmost_bound):
+            for j in range (leftmost_bound, rightmost_bound):
+                if self.isInsideTriangle(self.x1, self.x2, self.x3, self.y1, self.y2, self.y3, i, j):
+                    if i < shape[0] and j < shape[1]:
+                        template[i][j] = self.color
+        return template
 
 
     """
@@ -96,9 +115,14 @@ class Individual():
     If same image, fitness is 255^2.
     """
     def calculate_fitness(self, target):
-        avg_diff_squared = np.sum((self.genes - target)**2) / self.gene_len
-        self.fitness = int((self.max_gene**2) - avg_diff_squared)
-        print("fitness:", self.fitness)
+        shape = np.shape(target)
+        w, h = shape[0], shape[1]
+
+        genes = self.draw_triangle(target, np.zeros((w,h,3)))
+
+        avg_diff_squared = np.sum((genes - target)**2) / (w*h)
+        self.fitness = int((255**2) - avg_diff_squared)
+        # print("fitness:", self.fitness)
 
     """
     Changes the genes of self based on the two indivduals passed in. 
@@ -108,68 +132,46 @@ class Individual():
 
     genes: matrix with same dimensions as target image
     """
-    def crossover(self, fst_DNA, snd_DNA):
-        #Randomly choose between the two different methods listed below 
-        # if (random.randint(0,1)):
-        # For every entry into self.genes, randomly decide if we should use fst_DNA or snd_DNA
-        choice = np.random.randint(2, size = np.shape(fst_DNA.shapes)).astype(bool)
-        self.shapes = np.where(choice, fst_DNA.shapes, snd_DNA.shapes) # CHANGE: fst_DNA -> fst_DNA.genes
-        # else:
-            # Picks a random row to use first_DNA genes, then uses snd_DNA genes for the rest of the rows
-            # random_row = np.random.randint(fst_DNA.genes.shape[0])
-            # self.genes = fst_DNA.genes[:random_row]
-            # self.genes = np.append(self.genes, np.array(snd_DNA.genes[random_row:]), axis = 0)
+    def crossover(self, p1, p2):
+        self.x1 = np.random.choice([p1.x1,p2.x1])
+        self.x2 = np.random.choice([p1.x2,p2.x2])
+        self.x3 = np.random.choice([p1.x3,p2.x3])
 
-    """
-    Crossover between two triangle objects
-    """
-    def crossover_triangle(self, tri1, tri2):
-        x1 = np.random.choice([tri1.x1,tri2.x1])
-        x2 = np.random.choice([tri1.x2,tri2.x2])
-        x3 = np.random.choice([tri1.x3,tri2.x3])
+        self.y1 = np.random.choice([p1.y1,p2.y1])
+        self.y2 = np.random.choice([p1.y2,p2.y2])
+        self.y3 = np.random.choice([p1.y3,p2.y3])
 
-        y1 = np.random.choice([tri1.y1,tri2.y1])
-        y2 = np.random.choice([tri1.y2,tri2.y2])
-        y3 = np.random.choice([tri1.y3,tri2.y3])
-
-        color = np.random.choice([tri1.color,tri2.color])
-        return Triangle(x1,x2,x3,y1,y2,y3,color,False, self.gene_dims)
+        if np.random.randint(0,1): self.color = p1.color 
+        else: self.color = p2.color
    
     """
     idea: randomly change certain pixel values
     Chooses a number of mutations based on binom distribution, num genes, and mutation rate
     """
     def mutate(self, rate):
-        n_mutations = np.random.binomial(self.gene_len, rate)
-        for _ in range(n_mutations):
-            random_index = np.random.randint(0, np.shape(self.shapes))
-            random_triangle = self.shapes[random_index]
-            self.mutate_triangle(random_triangle[0])
-            # self.shapes[random_index] = self.mutate_triangle(random_triangle)
-
-    """
-    Mutation of a triangle object
-    """
-    def mutate_triangle(self, triangle):
-        random_mutation = np.random.randint(9)
-        if random_mutation == 0: 
-            triangle.x1 = self.clamp(triangle.x1 + np.random.randint(self.gene_dims[0]/5), 0, self.gene_dims[0] - 1) 
-            triangle.y1 = self.clamp(triangle.y1 + np.random.randint(self.gene_dims[1]/5), 0, self.gene_dims[1] - 1)
-        elif random_mutation == 1:
-            triangle.x2 = self.clamp(triangle.x2 + np.random.randint(self.gene_dims[0]/5), 0, self.gene_dims[0] - 1) 
-            triangle.y2 = self.clamp(triangle.y2 + np.random.randint(self.gene_dims[1]/5), 0, self.gene_dims[1] - 1)
-        elif random_mutation == 2:
-            triangle.x3 = self.clamp(triangle.x3 + np.random.randint(self.gene_dims[0]/5), 0, self.gene_dims[0] - 1) 
-            triangle.y3 = self.clamp(triangle.y3 + np.random.randint(self.gene_dims[1]/5), 0, self.gene_dims[1] - 1)
-        elif random_mutation == 3:
-            triangle.color[0] = self.clamp(triangle.color[0] + np.random.randint(255), 0, 255) 
-        elif random_mutation == 4:
-            triangle.color[1] = self.clamp(triangle.color[1] + np.random.randint(255), 0, 255) 
-        elif random_mutation == 5:
-            triangle.color[2] = self.clamp(triangle.color[2] + np.random.randint(255), 0, 255) 
-        else: 
-            pass 
-
+        random_int = np.random.uniform(0,1)
+        if rate < random_int:
+            random_mutation = np.random.randint(0,5)
+            shape = np.shape(self.target)
+            w,h = shape[0], shape[1]
+            if random_mutation == 0: 
+                self.x1 = self.clamp(self.x1 + np.random.randint(w/5), 0, w - 1) 
+                self.y1 = self.clamp(self.y1 + np.random.randint(h/5), 0, h - 1)
+            elif random_mutation == 1:
+                self.x2 = self.clamp(self.x2 + np.random.randint(w/5), 0, w - 1) 
+                self.y2 = self.clamp(self.y2 + np.random.randint(h/5), 0, h - 1)
+            elif random_mutation == 2:
+                self.x3 = self.clamp(self.x3 + np.random.randint(w/5), 0, w - 1) 
+                self.y3 = self.clamp(self.y3 + np.random.randint(h/5), 0, h - 1)
+            elif random_mutation == 3:
+                self.color[0] = self.clamp(self.color[0] + np.random.randint(255), 0, 255) 
+            elif random_mutation == 4:
+                self.color[1] = self.clamp(self.color[1] + np.random.randint(255), 0, 255) 
+            elif random_mutation == 5:
+                self.color[2] = self.clamp(self.color[2] + np.random.randint(255), 0, 255) 
+            else: 
+                pass 
+            
     """
     Ensures that floor <= value <= ceiling
     """

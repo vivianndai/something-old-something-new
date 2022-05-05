@@ -47,7 +47,7 @@ class Population():
         self.target_dims = (len(target), len(target[0]))
 
         for i in range(self.population_size):
-            self.population[i] = Individual(self.target_image)
+            self.population[i] = Individual(0,0,0,0,0,0,[0,0,0], True, target)
 
     def calculate_all_fitness(self):
         for i in range(self.population_size):
@@ -72,7 +72,7 @@ class Population():
         parent_1 = self.mating_pool[np.random.randint(self.mating_pool_size)]
         parent_2 = self.mating_pool[np.random.randint(self.mating_pool_size)]
 
-        child = Individual(target=self.target_image, p1=parent_1, p2=parent_2, crossover=self.crossover, mutate=self.mutate, mutation_rate=self.mutation_rate)
+        child = Individual(0,0,0,0,0,0,[0,0,0], True, target=self.target_image, p1=parent_1, p2=parent_2, crossover=self.crossover, mutate=self.mutate, mutation_rate=self.mutation_rate)
 
         return child
 
@@ -98,4 +98,13 @@ class Population():
         self.fittest_survive(new_children)
 
     def get_most_fit_individual(self):
-        return self.population[0].genes
+        w, h = self.target_dims[0], self.target_dims[1]
+        template = np.zeros((w,h,3))
+        return self.population[0].draw_triangle(self.target_image, template)
+
+    def get_top_fit_individuals(self, num):
+        w, h = self.target_dims[0], self.target_dims[1]
+        template = np.zeros((w,h,3))
+        for i in range(num):
+            template = self.population[i].draw_triangle(self.target_image, template)
+        return template
