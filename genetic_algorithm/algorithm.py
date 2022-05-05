@@ -6,16 +6,18 @@ from population import Population
 import time
 import numpy as np
 
-NUM_GENERATIONS = 100
+NUM_GENERATIONS = 10
 MUTATION_RATE = 0.01
 POP_SIZE = 75
 CROSSOVER = True
+POLYGONS = 100
+VERTICES = 5
 
 
 def main():
     im = cv2.imread("../static/images/starrynight.png",flags=cv2.IMREAD_COLOR)    
 
-    population = Population(mutation_rate=MUTATION_RATE, pop_size=POP_SIZE, crossover=CROSSOVER, mutate=CROSSOVER)
+    population = Population(mutation_rate=MUTATION_RATE, pop_size=POP_SIZE, crossover=CROSSOVER, mutate=CROSSOVER, polygons=POLYGONS, vertices=VERTICES)
     population.setup(im)
 
     start = time.time() # measure elapsed time

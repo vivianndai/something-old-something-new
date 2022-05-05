@@ -24,7 +24,7 @@ class Population():
                          - e.g if fitness = 255^2 = MAX_FITNESS, then added [copies_in_mating_pool] times
                          - if fitness is half of that, added half the number of times, etc.
     """
-    def __init__(self, mutation_rate=0.01, pop_size=100, crossover=True, mutate=True):
+    def __init__(self, mutation_rate=0.01, pop_size=100, crossover=True, mutate=True, polygons=100, vertices=3):
         self.mutation_rate = mutation_rate
         self.population_size = pop_size
         self.population = np.empty(pop_size, dtype=Individual) # CHANGE: added dtype=Individual) here because I got an error
@@ -34,6 +34,8 @@ class Population():
         self.copies_in_mating_pool = 50
         self.crossover = crossover
         self.mutate = mutate
+        self.polygons = polygons
+        self.vertices = vertices
 
 
     """
@@ -44,7 +46,7 @@ class Population():
         self.target_image = target
 
         for i in range(self.population_size):
-            self.population[i] = Individual(self.target_image, )
+            self.population[i] = Individual(self.target_image, polygons=self.polygons, vertices=self.vertices)
 
     def calculate_all_fitness(self):
         for i in range(self.population_size):
