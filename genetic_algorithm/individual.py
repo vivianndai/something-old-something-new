@@ -7,6 +7,11 @@ class Individual():
     """
     An individual is a member of the population
 
+    x1, y1: first vertex of triangle 
+    x2, y2: second vertex of triangle 
+    x3, y3: third vertex of triangle 
+    color: color of triangle 
+    randomize: True if we should randomize, False if we want to use passed parameters
     target: target image
     p1: first parent
     p2: second parent
@@ -14,12 +19,7 @@ class Individual():
     mutate: mutate genes
     mutation_rate: rate to mutate a pixel value
 
-    min_gene: minimum gene value
-    max_gene: maximum gene value
-    gene_dims: dimension of image
-    gene_len: number of pixels in image #TODO: decide if needed
-    genes: matrix with same dimensions as target image
-
+    fitness: fitness of the individual
     max fitness is 255^2 = 65025
     """
     def __init__(self, x1, x2, x3, y1, y2, y3, color, randomize, target, p1=None, p2=None, 
@@ -57,13 +57,16 @@ class Individual():
         y = np.random.randint(0, size[1] - 1)
         return x,y
 
-
     """ 
-    Returns a 2D matrix of size target-dims where the location of the 
-    triangle based on its vertices is colored self.color, and all other 
-    values are 0 
+    Returns a 2D matrix of target's size, with the triangle drawn on it.
 
-    Template: What we are drawing on
+    For a triangle to "be drawn": Given 3 vertices, all points within those boundaries
+    are set to self.color
+
+    Template: The 2D matrix that is our 'canvas' that we will draw on. 
+    i.e, if we are drawing a triangle on a blank canvas, template is np.zero array
+    if we are drawing a triangle on a canvas that already has triangles, template is an array of those triangles
+
     """
     def draw_triangle(self, target, template):
         shape = np.shape(target)
@@ -126,11 +129,7 @@ class Individual():
 
     """
     Changes the genes of self based on the two indivduals passed in. 
-    We will be choosing a random crossover point in which we will use 
-    the genes of the first individual prior to this point, and the genes
-    of the second individual after this point. 
-
-    genes: matrix with same dimensions as target image
+    Each attribute is randomly chosen from parent 1 or parent 2. 
     """
     def crossover(self, p1, p2):
         self.x1 = np.random.choice([p1.x1,p2.x1])
@@ -141,11 +140,12 @@ class Individual():
         self.y2 = np.random.choice([p1.y2,p2.y2])
         self.y3 = np.random.choice([p1.y3,p2.y3])
 
+        #Did this way b/c self.color is 3-tuple and messed up
         if np.random.randint(0,1): self.color = p1.color 
         else: self.color = p2.color
    
     """
-    idea: randomly change certain pixel values
+    Randomly changes one attribute of the individual based on mutation rate 
     Chooses a number of mutations based on binom distribution, num genes, and mutation rate
     """
     def mutate(self, rate):
