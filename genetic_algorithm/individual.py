@@ -47,11 +47,16 @@ class Individual():
     draws on canvas
     """
     def draw(self):
-        for polygon in self.polygons:
-            # print(polygon.vertices)
-            # print(np.shape(self.drawn_image))
-            cv2.fillPoly(self.drawn_image, pts=np.int32([polygon.vertices]), color=polygon.color)
+        do_permutation = np.random.binomial(1, (self.max_gene**2 - self.fitness) / self.max_gene**2, size=1)
+        if do_permutation:
+            self.polygons = np.random.permutation(self.polygons) 
 
+        for polygon in self.polygons:
+            drawn_poly = np.zeros(self.image_dims)
+            cv2.fillPoly(drawn_poly, pts=np.int32([polygon.vertices]), color=polygon.color)
+            opacity = np.random.random()
+            cv2.addWeighted(drawn_poly, opacity, self.drawn_image, 1 - opacity, 1, dst=self.drawn_image)
+            # cv2.fillPoly(self.drawn_image, pts=np.int32([polygon.vertices]), color=polygon.color)
 
     """
     Returns int fitness of self compared to target.
@@ -76,16 +81,10 @@ class Individual():
     genes: matrix with same dimensions as target image
     """
     def crossover(self, fst_DNA, snd_DNA):
-        #Randomly choose between the two different methods listed below 
-        # if (random.randint(0,1)):
-        # For every entry into self.genes, randomly decide if we should use fst_DNA or snd_DNA
-        choice = np.random.binomial(1, fst_DNA.normalize_fitness(), size=self.num_polygons).astype(bool)
-        self.polygons = np.where(choice, fst_DNA.polygons, snd_DNA.polygons) # CHANGE: fst_DNA -> fst_DNA.genes
-        # else:
-            # Picks a random row to use first_DNA genes, then uses snd_DNA genes for the rest of the rows
-            # random_row = np.random.randint(fst_DNA.genes.shape[0])
-            # self.genes = fst_DNA.genes[:random_row]
-            # self.genes = np.append(self.genes, np.array(snd_DNA.genes[random_row:]), axis = 0)
+        # choice = np.random.binomial(1, fst_DNA.normalize_fitness(), size=self.num_polygons).astype(bool)
+        # self.polygons = np.where(choice, fst_DNA.polygons, snd_DNA.polygons) # CHANGE: fst_DNA -> fst_DNA.genes
+        
+        self.polygons = np.concatenate((fst_DNA.polygons[:self.num_polygons//2], snd_DNA.polygons[self.num_polygons//2:]))
 
 
     """
@@ -96,7 +95,7 @@ class Individual():
         mutation_list = np.random.binomial(1, rate, size=self.num_polygons).astype(bool)
         for i in range(self.num_polygons):
             if mutation_list[i]:
-                self.polygons[i].mutate_points(i)
+                self.polygons[i].mutate_points()
         # if anything mutated, redraw
         if np.count_nonzero(mutation_list) != 0:
             self.draw()

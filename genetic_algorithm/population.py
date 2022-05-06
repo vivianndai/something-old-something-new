@@ -71,7 +71,7 @@ class Population():
         parent_1 = self.mating_pool[np.random.randint(self.mating_pool_size)]
         parent_2 = self.mating_pool[np.random.randint(self.mating_pool_size)]
 
-        child = Individual(target=self.target_image, p1=parent_1, p2=parent_2, crossover=self.crossover, mutate=self.mutate, mutation_rate=self.mutation_rate)
+        child = Individual(target=self.target_image, p1=parent_1, p2=parent_2, crossover=self.crossover, mutate=self.mutate, mutation_rate=self.mutation_rate, polygons=self.polygons, vertices=self.vertices)
 
         return child
 

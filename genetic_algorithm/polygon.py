@@ -19,8 +19,10 @@ class Polygon():
 
     """Randomly initialize points given size of image"""
     def initialize_points(self):
-        x = np.random.randint(0, self.img_size[1] - 1)
-        y = np.random.randint(0, self.img_size[0] - 1)
+        # x = np.random.randint(0, self.img_size[1] - 1)
+        # y = np.random.randint(0, self.img_size[0] - 1)
+        x = np.random.uniform()
+        y = np.random.uniform()
 
         return [x, y]
 
@@ -31,6 +33,6 @@ class Polygon():
         
         return [red, green, blue]
     
-    def mutate_points(self, index):
+    def mutate_points(self):
         self.vertices = np.array([self.initialize_points() for _ in range(self.num_vertices)])
         self.color = self.initialize_color()
