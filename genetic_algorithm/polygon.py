@@ -19,10 +19,8 @@ class Polygon():
 
     """Randomly initialize points given size of image"""
     def initialize_points(self):
-        # x = np.random.randint(0, self.img_size[1] - 1)
-        # y = np.random.randint(0, self.img_size[0] - 1)
-        x = np.random.uniform()
-        y = np.random.uniform()
+        x = np.random.randint(0, self.img_size[1] - 1)
+        y = np.random.randint(0, self.img_size[0] - 1)
 
         return [x, y]
 
