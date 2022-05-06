@@ -83,7 +83,7 @@ class Population():
         self.population = sorted(self.population, key=lambda x: x.fitness, reverse=True)
         # remove least fit
         self.population = self.population[:self.population_size]
-        print("Best individuals in generation:", [i.fitness for i in self.population])
+        print("Best individuals in generation:", [int(i.fitness / 255**2 * 10**4) / 10**2 for i in self.population])
 
     """
     Replace population with new generation of individuals:

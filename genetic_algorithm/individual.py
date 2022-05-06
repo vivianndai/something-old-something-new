@@ -51,12 +51,22 @@ class Individual():
         if do_permutation:
             self.polygons = np.random.permutation(self.polygons) 
 
-        for polygon in self.polygons:
-            drawn_poly = np.zeros(self.image_dims)
-            cv2.fillPoly(drawn_poly, pts=np.int32([polygon.vertices]), color=polygon.color)
-            opacity = np.random.random()
+        for i in range(self.num_polygons):
+
+            # with opacity:
+            p = self.polygons[i]
+            drawn_poly = np.copy(self.drawn_image)
+            modified_vertices = [ [v[0] * self.image_dims[0], v[1] * self.image_dims[1]] for v in p.vertices]
+            cv2.fillPoly(drawn_poly, pts=np.int32([modified_vertices]), color=p.color)
+            
+            # opacity = (self.num_polygons - i) / self.num_polygons * np.random.uniform(0.1, 0.3) * np.random.uniform(0.1, 0.1)
+            opacity = 0.2
             cv2.addWeighted(drawn_poly, opacity, self.drawn_image, 1 - opacity, 1, dst=self.drawn_image)
-            # cv2.fillPoly(self.drawn_image, pts=np.int32([polygon.vertices]), color=polygon.color)
+
+            # no opacity:
+            # p = self.polygons[i]
+            # modified_vertices = [ [v[0] * self.image_dims[0], v[1] * self.image_dims[1]] for v in p.vertices]
+            # cv2.fillPoly(self.drawn_image, pts=np.int32([modified_vertices]), color=p.color.append(0.2))
 
     """
     Returns int fitness of self compared to target.
