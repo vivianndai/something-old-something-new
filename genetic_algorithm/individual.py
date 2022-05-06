@@ -192,11 +192,12 @@ class Individual():
             triangle.x3 = self.clamp(triangle.x3 + np.random.randint(self.gene_dims[0]/5), 0, self.gene_dims[0] - 1) 
             triangle.y3 = self.clamp(triangle.y3 + np.random.randint(self.gene_dims[1]/5), 0, self.gene_dims[1] - 1)
         elif random_mutation == 3:
-            triangle.color[0] = self.clamp(triangle.color[0] + np.random.randint(255), 0, 255) 
-        elif random_mutation == 4:
-            triangle.color[1] = self.clamp(triangle.color[1] + np.random.randint(255), 0, 255) 
-        elif random_mutation == 5:
-            triangle.color[2] = self.clamp(triangle.color[2] + np.random.randint(255), 0, 255) 
+            triangle.color[0] = np.random.randint(255)
+            triangle.color[1] = np.random.randint(255)
+            triangle.color[2] = np.random.randint(255)
+
+        # elif random_mutation == 4:
+        # elif random_mutation == 5:
         else: 
             pass 
 

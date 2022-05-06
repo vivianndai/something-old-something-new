@@ -97,4 +97,4 @@ class Population():
         self.fittest_survive(new_children)
 
     def get_most_fit_individual(self):
-        return self.population[0].drawn_image
+        return self.population[0].genes
