@@ -11,8 +11,8 @@ class Canvas():
         self.gene_dims = np.shape(target)
         self.gene_len = self.gene_dims[0] * self.gene_dims[1]
         self.genes = np.zeros(self.gene_dims)
+        self.target_dims = (target.shape[0], target.shape[1])
         self.fitness = 0
-        self.padding = 0
         # if crossover:
         #     self.crossover(p1, p2)
         # if mutate:
@@ -24,33 +24,75 @@ class Canvas():
 
         # self.calculate_fitness(target)
 
-    def draw_brushstroke(self, brushstroke, target_img):
+    def combine_two_color_images(self, path1, path2):
+        foreground = cv2.imread(path1)
+        background = cv2.imread(path2)
+        # background is bigger
+
+        foreground_height = foreground.shape[0]
+        foreground_width = foreground.shape[1]
+        alpha = 1
+
+        # do composite on the upper-left corner of the background image.
+        blended_portion = cv2.addWeighted(foreground,
+                                          alpha,
+                                          background[:foreground_height,
+                                                     :foreground_width, :],
+                                          1 - alpha,
+                                          0,
+                                          background)
+        background[:foreground_height, :foreground_width, :] = blended_portion
+        cv2.imshow('composited image', background)
+
+        cv2.waitKey(500)
+
+    def combine_two_images_with_anchor(self, foreground, background, anchor_y, anchor_x):
+        # foreground = cv2.imread(foreground)
+        # background = cv2.imread(background)
+        # Check if the foreground is inbound with the new coordinates and raise an error if out of bounds
+
+        foreground_height = foreground.shape[0]
+        foreground_width = foreground.shape[1]
+        background_height = background.shape[0]
+        background_width = background.shape[1]
+        if foreground_height+anchor_y > background_height or foreground_width+anchor_x > background_width:
+            raise ValueError(
+                "The foreground image exceeds the background boundaries at this location")
+
+        alpha = 1
+
+        # do composite at specified location
+        start_y = anchor_y
+        start_x = anchor_x
+        end_y = anchor_y+foreground_height
+        end_x = anchor_x+foreground_width
+        blended_portion = cv2.addWeighted(foreground,
+                                          alpha,
+                                          background[start_y:end_y,
+                                                     start_x:end_x, :],
+                                          1 - alpha,
+                                          0,
+                                          background)
+        background[start_y:end_y, start_x:end_x, :] = blended_portion
+        cv2.imshow('combined image', background)
+        # cv2.imwrite(
+        #     '/Users/connietsang/Desktop/ai/brushstrokes/combined_image.png', background)
+        cv2.waitKey(10000)
+        return background
+
+    def draw_brushstroke(self, brushstroke, inImg):
+        # inImg is initially empty
+        print('start here')
         color = brushstroke.color
         brush = brushstroke.brush_rep
-        posX = brushstroke.posX + self.padding
-        posY = brushstroke.posY + self.padding
-        size = brushstroke.size
+        posX = brushstroke.posX
+        posY = brushstroke.posY
+        self.combine_two_images_with_anchor(
+            brush, inImg, posY, posX)
 
-        # test which interpolation method is best/most efficient
-        # could also just downsize
-        brush_resized = cv2.resize(
-            brush, None, fx=size, fy=size, interpolation=cv2.INTER_LINEAR)
-        rows = brush_resized.shape(0)
-        columns = brush_resized.shape(1)
-
-        y_min = int(posY - rows/2)
-        y_max = int(posY + (rows - rows/2))
-        x_min = int(posX - columns/2)
-        x_max = int(posX + (columns - columns/2))
-
-        brush_img = np.copy(brush_resized)[0:rows, 0:columns].astype(float)
-        canvas = target_img[y_min: y_max, x_min: x_max].astype(float)
-        out = cv2.add(brush_img, canvas).astype(int)
-        return out
-
-    def draw_canvas(self, brushstroke_seq, target_img):
+    def draw_canvas(self, brushstroke_seq):
         out = [
-            np.zeros((target_img.shape[0], target_img.shape[1]), np.uint8)]
+            np.zeros((self.target_dims[0], self.target_dims[1], 4), np.uint8)]
         for i in range(len(brushstroke_seq)):
             temp_canvas = self.draw_brushstroke(brushstroke_seq[i], out)
             out = self.draw_brushstroke(brushstroke_seq[i+1], temp_canvas)
