@@ -7,16 +7,18 @@ class Brushstroke():
     """Initialize the Brushstroke object, which will make up the Image object"""
 
     def __init__(self, target_dims):
-        self.color = random.randrange(0, 255)
+        self.blue = random.randrange(0, 255)
+        self.green = random.randrange(0, 255)
+        self.red = random.randrange(0, 255)
         self.brushNumber = 4
         self.brushes = self.load_brushes(
-            '/Users/connietsang/Desktop/ai/brushstrokes/brush_types')
+            "/Users/connietsang/Desktop/ai/brushstrokes/brush_types")
         self.brush_type = random.randrange(0, self.brushNumber)
 
         # representation of the brush img in matrix form
         self.brush_matrix = self.brushes[self.brush_type]
 
-        scale_percent = 30  # percent of original size
+        scale_percent = random.randrange(10, 50)  # percent of original size
         width = int(self.brush_matrix.shape[1] * scale_percent / 100)
         height = int(self.brush_matrix.shape[0] * scale_percent / 100)
         dim = (width, height)
@@ -24,12 +26,20 @@ class Brushstroke():
         self.brush_rep = cv2.resize(
             self.brush_matrix, dim, interpolation=cv2.INTER_AREA)
 
+        self.brush_rep[np.all(self.brush_rep == (
+            0, 0, 0, 255), axis=-1)] = (self.blue, self.green, self.red, 255)
+
+        # self.brush_rep = np.where(
+        #     self.brush_rep > 0, self.brush_rep * self.color, 0)
         # self.mask = self.brush_rep[:, :, 3]
 
         self.size = (self.brush_rep.shape[0], self.brush_rep.shape[1])
 
-        self.posX = int(random.randrange(0, target_dims[0]) - width)
-        self.posY = int(random.randrange(0, target_dims[1]) - height)
+        random_posX = int(random.randrange(0, target_dims[1]) - width)
+        random_posY = int(random.randrange(0, target_dims[0]) - height)
+
+        self.posX = 0 if random_posX < 0 else random_posX
+        self.posY = 0 if random_posY < 0 else random_posY
 
         # Gradient measures change in the image
         # Magnitude tells us how quickly the image is changing
@@ -39,6 +49,6 @@ class Brushstroke():
         brushes = []
         for i in range(self.brushNumber):
             brushes.append(cv2.imread(
-                (path + '/brush' + str(i) + '.png'), cv2.IMREAD_UNCHANGED))
+                (path + "/brush" + str(i) + ".png"), cv2.IMREAD_UNCHANGED))
             # brushes.append(cv2.imread(path + '/brush' + str(i) + '.png'))
         return brushes
