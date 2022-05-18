@@ -6,16 +6,16 @@ from population import Population
 import time
 import numpy as np
 
-NUM_GENERATIONS = 300
+NUM_GENERATIONS = 1000
 MUTATION_RATE = 0.05
-POP_SIZE = 50
+POP_SIZE = 100
 CROSSOVER = True
-POLYGONS = 125
+POLYGONS = 200
 VERTICES = 3
 
 
 def main():
-    im = cv2.imread("../static/images/sunrise.png",flags=cv2.IMREAD_COLOR)    
+    im = cv2.imread("../static/images/cornell.jpg",flags=cv2.IMREAD_COLOR)    
 
     population = Population(mutation_rate=MUTATION_RATE, pop_size=POP_SIZE, crossover=CROSSOVER, mutate=CROSSOVER, polygons=POLYGONS, vertices=VERTICES)
     population.setup(im)
