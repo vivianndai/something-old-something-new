@@ -9,10 +9,11 @@ NUM_GENERATIONS = 5
 MUTATION_RATE = 0.01
 POP_SIZE = 75
 CROSSOVER = True
+IMAGE_PATH = "../static/images/small.jpeg"
 
 
 def main():
-    im = cv2.imread("../static/images/small.jpeg",flags=cv2.IMREAD_COLOR)    
+    im = cv2.imread(IMAGE_PATH,flags=cv2.IMREAD_COLOR)    
 
     population = Population(mutation_rate=MUTATION_RATE, pop_size=POP_SIZE, crossover=CROSSOVER, mutate=CROSSOVER)
     population.setup(im)

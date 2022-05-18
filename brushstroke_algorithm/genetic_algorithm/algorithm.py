@@ -11,6 +11,7 @@ NUM_GENERATIONS = 300
 MUTATION_RATE = 0.05
 POP_SIZE = 50
 CROSSOVER = False
+IMAGE_PATH = "../static/images/small.jpeg"
 
 """
 only works with pngs
@@ -22,7 +23,7 @@ etc.
 def main():
 
     im = cv2.imread(
-        "../static/images/small.jpeg", flags=cv2.IMREAD_UNCHANGED)
+        IMAGE_PATH, flags=cv2.IMREAD_UNCHANGED)
 
     population = Population(mutation_rate=MUTATION_RATE, pop_size=POP_SIZE,
                             crossover=CROSSOVER, mutate=CROSSOVER)
