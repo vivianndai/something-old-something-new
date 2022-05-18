@@ -5,14 +5,36 @@ import cv2
 from population import Population 
 import time
 import numpy as np
+import sys
 
-NUM_GENERATIONS = 350
-MUTATION_RATE = 0.05
-POP_SIZE = 75
-CROSSOVER = True
-POLYGONS = 200
-VERTICES = 3
-IMAGE_PATH = "../static/images/small.jpeg"
+if len(sys.argv) > 1:
+    index = sys.argv[1].index('=')
+    NUM_GENERATIONS = int(sys.argv[1][index+1:])
+    #Decimal point creates new entry
+    MUTATION_RATE = float(sys.argv[3])
+
+    index = sys.argv[4].index("=")
+    POP_SIZE = int(sys.argv[4][index+1:])
+    
+    index = sys.argv[5].index("=")
+    CROSSOVER = bool(sys.argv[5][index+1:])
+
+    index = sys.argv[6].index("=")
+    POLYGONS = int(sys.argv[6][index+1:])
+
+    index = sys.argv[7].index("=")
+    VERTICES = int(sys.argv[7][index+1:])
+
+    index = sys.argv[8].index("=")
+    IMAGE_PATH = sys.argv[8][index+1:]
+else: 
+    NUM_GENERATIONS = 350
+    MUTATION_RATE = 0.05
+    POP_SIZE = 75
+    CROSSOVER = True
+    POLYGONS = 200
+    VERTICES = 3
+    IMAGE_PATH = "../static/images/small.jpeg"
 
 
 def main():
