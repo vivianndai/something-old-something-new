@@ -1,10 +1,7 @@
 # Runs the algorithm
-import numpy as np
-# from PIL import Image
 import cv2
 from population import Population 
 import time
-import numpy as np
 import sys
 
 if len(sys.argv) > 1:
