@@ -4,13 +4,29 @@ import numpy as np
 import cv2
 from population import Population 
 import time
+import sys
 
-NUM_GENERATIONS = 5
-MUTATION_RATE = 0.01
-POP_SIZE = 75
-CROSSOVER = True
-IMAGE_PATH = "../static/images/small.jpeg"
 
+if len(sys.argv) > 1:
+    index = sys.argv[1].index('=')
+    NUM_GENERATIONS = int(sys.argv[1][index+1:])
+    #Decimal point creates new entry
+    MUTATION_RATE = float(sys.argv[3])
+
+    index = sys.argv[4].index("=")
+    POP_SIZE = int(sys.argv[4][index+1:])
+    
+    index = sys.argv[5].index("=")
+    CROSSOVER = bool(sys.argv[5][index+1:])
+
+    index = sys.argv[6].index("=")
+    IMAGE_PATH = sys.argv[6][index+1:]
+else: 
+    NUM_GENERATIONS = 5
+    MUTATION_RATE = 0.01
+    POP_SIZE = 75
+    CROSSOVER = True
+    IMAGE_PATH = "../static/images/small.jpeg"
 
 def main():
     im = cv2.imread(IMAGE_PATH,flags=cv2.IMREAD_COLOR)    
