@@ -13,13 +13,14 @@ class Brushstroke():
         self.brushNumber = 4
         self.brushes = self.load_brushes(
             "../brush_types")
+
         self.brush_type = random.randrange(0, self.brushNumber)
 
         # representation of the brush img in matrix form
         self.brush_matrix = self.brushes[self.brush_type]
 
         self.scale_percent = random.randrange(
-            10, 50)  # percent of original size
+            5, 20)  # percent of original size
         # self.scale_percent = np.random.uniform(start, stop)
         width = int(self.brush_matrix.shape[1] * self.scale_percent / 100)
         height = int(self.brush_matrix.shape[0] * self.scale_percent / 100)
@@ -28,12 +29,10 @@ class Brushstroke():
         self.brush_rep = cv2.resize(
             self.brush_matrix, dim, interpolation=cv2.INTER_AREA)
 
+        # makes the opaque part of an image a random color
+        # (completely opaque images have the alpha channel set to 255, transparent images set to 0)
         self.brush_rep[np.all(self.brush_rep == (
             0, 0, 0, 255), axis=-1)] = (self.blue, self.green, self.red, 255)
-
-        # self.brush_rep = np.where(
-        #     self.brush_rep > 0, self.brush_rep * self.color, 0)
-        # self.mask = self.brush_rep[:, :, 3]
 
         self.size = (self.brush_rep.shape[0], self.brush_rep.shape[1])
 
@@ -42,10 +41,6 @@ class Brushstroke():
 
         self.posX = 0 if random_posX < 0 else random_posX
         self.posY = 0 if random_posY < 0 else random_posY
-
-        # Gradient measures change in the image
-        # Magnitude tells us how quickly the image is changing
-        # Direction of the gradient tells us the direction in which the image is changing most rapidly.
 
     def load_brushes(self, path):
         brushes = []

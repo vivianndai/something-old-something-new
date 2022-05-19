@@ -1,7 +1,5 @@
 import numpy as np
 import random
-import cv2
-from brushstroke import Brushstroke
 from canvas import Canvas
 
 
